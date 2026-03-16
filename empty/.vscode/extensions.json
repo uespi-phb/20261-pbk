@@ -1,0 +1,17 @@
+{
+  "recommendations": [
+    "adpyke.vscode-sql-formatter",
+    "dbaeumer.vscode-eslint",
+    "dotenv.dotenv-vscode",
+    "dracula-theme.theme-dracula",
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-typescript-next",
+    "natqe.reload",
+    "oderwat.indent-rainbow",
+    "ritwickdey.LiveServer",
+    "shd101wyy.markdown-preview-enhanced",
+    "vitest.explorer",
+    "vscode-icons-team.vscode-icons",
+    "YoavBls.pretty-ts-errors"
+  ]
+}
