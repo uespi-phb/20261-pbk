@@ -1,54 +1,39 @@
-export function validateCpf(str: string) {
-  if (str !== null) {
-    if (str !== undefined) {
-      if (str.length >= 11 && str.length <= 14) {
-        // cleaning cpf
-        str = str.replace('.', '').replace('.', '').replace('-', '').replace(' ', '')
-        // tudo igual
-        if (!str.split('').every((c) => c === str[0])) {
-          try {
-            let d1, d2
-            let dg1, dg2, rest
-            let digito
-            let nDigResult
-            d1 = d2 = 0
-            dg1 = dg2 = rest = 0
+export function validateCpf(cpf: string) {
+  const cfpNumberOfDigits = 11
+  const firstCheckDigitIndex = 9
+  const secondCheckDigitIndex = 10
 
-            for (let nCount = 1; nCount < str.length - 1; nCount++) {
-              // if (isNaN(parseInt(str.substring(nCount -1, nCount)))) {
-              // 	return false
-              // } else {
+  cpf = removeNonDigits(cpf)
 
-              digito = parseInt(str.substring(nCount - 1, nCount))
-              d1 = d1 + (11 - nCount) * digito
+  if (cpf.length != cfpNumberOfDigits) return false
+  if (allDigitsTheSame(cpf)) return false
 
-              d2 = d2 + (12 - nCount) * digito
-              // }
-            }
+  const firstCheckDigit = calculateCheckDigit(cpf, firstCheckDigitIndex)
+  if (firstCheckDigit !== cpf[firstCheckDigitIndex]) return false
 
-            rest = d1 % 11
+  const secondCheckDigit = calculateCheckDigit(cpf, secondCheckDigitIndex)
+  if (secondCheckDigit !== cpf[secondCheckDigitIndex]) return false
 
-            // se for menor que 2 é 0, senão é 11 menos o resto
-            dg1 = rest < 2 ? (dg1 = 0) : 11 - rest
-            d2 += 2 * dg1
-            rest = d2 % 11
-            if (rest < 2) dg2 = 0
-            else dg2 = 11 - rest
+  return true
+}
 
-            const nDigVerific = str.substring(str.length - 2, str.length)
-            // eslint-disable-next-line prefer-const
-            nDigResult = '' + dg1 + '' + dg2
+const removeNonDigits = (cpf: string): string => {
+  if (cpf === null || cpf === undefined) return ''
+  return cpf.replace(/\D/g, '')
+}
 
-            return nDigVerific == nDigResult
+const allDigitsTheSame = (cpf: string): boolean => cpf.split('').every((cpfDigit) => cpfDigit === cpf[0])
 
-            // se der problema...
-          } catch (e) {
-            console.error('Erro !' + e)
+const calculateCheckDigit = (cpf: string, checkDigitIndex: number): string => {
+  let digitFactor = checkDigitIndex + 1
+  let sum = 0
 
-            return false
-          }
-        } else return false
-      } else return false
-    } else return false
-  } else return false
+  for (const digit of cpf.substring(0, checkDigitIndex)) {
+    sum += parseInt(digit) * digitFactor
+    digitFactor--
+  }
+  const remainder = sum % 11
+  const checkDigit = remainder >= 2 ? 11 - remainder : 0
+
+  return checkDigit.toString()
 }
