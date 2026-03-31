@@ -1,0 +1,51 @@
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+*.swp
+
+pids
+logs
+results
+tmp
+
+# Test coverage reports
+coverage
+
+# API keys and secrets
+.env
+.env.*
+!.env.example
+
+# Dependency directory
+node_modules
+
+# Editors
+.idea
+*.iml
+
+# Logs
+*.log
+yarn-error.log*
+
+# Yarn
+.yarn/install-state.gz
+.pnp.*
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Ignore built ts files
+dist
+build
+
+.eslintcache
+*.tsbuildinfo
+
+.cache
+.tmp

@@ -1,4 +1,4 @@
-export function validateCpf(cpf: string) {
+export const validateCpf = (cpf: string): boolean => {
   const cfpNumberOfDigits = 11
   const firstCheckDigitIndex = 9
   const secondCheckDigitIndex = 10

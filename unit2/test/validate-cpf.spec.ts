@@ -13,6 +13,7 @@ describe('validateCpf', () => {
     // Assert
     expect(r).toBe(true)
   })
+
   test.each(nullOrEmptyCpfs)('Should not validate a null or empty CPF: "%s"', (nullOrEmptyCpf: unknown) => {
     // Arrange
     // Act
