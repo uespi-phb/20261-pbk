@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "vitest.explorer",
+    "YoavBls.pretty-ts-errors",
+    "shd101wyy.markdown-preview-enhanced",
+    "dotenv.dotenv-vscode"
+  ]
+}
