@@ -1,3 +1,8 @@
+import type { AccessTokenGenerator } from './access-token-generator'
+import { InvalidCredentialsError } from './invalid-credentials-error'
+import type { LoadUserByEmail } from './load-user-by-email'
+import type { PasswordComparer } from './password-comparer'
+
 export type SignInInput = {
   email: string
   password: string
@@ -10,25 +15,6 @@ export type SignInOutput = {
 export type SignInPayLoad = {
   userId: string
   email: string
-}
-
-export type AuthUser = {
-  userId: string
-  email: string
-  passwordHash: string
-}
-
-export interface LoadUserByEmail {
-  // load(userEmail: string): void
-  load: (userEmail: string) => Promise<AuthUser | null>
-}
-
-export interface PasswordComparer {
-  compare: (plainPassword: string, hashedPassword: string) => Promise<boolean>
-}
-
-export interface AccessTokenGenerator<T> {
-  generate: (payload: T) => Promise<string>
 }
 
 export class SignInUseCase {
@@ -55,11 +41,5 @@ export class SignInUseCase {
     return {
       accessToken,
     }
-  }
-}
-
-export class InvalidCredentialsError extends Error {
-  constructor(message: string = 'Invalid credentials error') {
-    super(message)
   }
 }

@@ -2,16 +2,11 @@ import { describe, test, expect, beforeAll } from 'vitest'
 import type { MockProxy } from 'vitest-mock-extended'
 import { mock } from 'vitest-mock-extended'
 
-import {
-  InvalidCredentialsError,
-  SignInUseCase,
-  type AccessTokenGenerator,
-  type AuthUser,
-  type LoadUserByEmail,
-  type PasswordComparer,
-  type SignInInput,
-  type SignInPayLoad,
-} from '../src/signin-usecase'
+import type { AccessTokenGenerator } from '../src/access-token-generator'
+import { InvalidCredentialsError } from '../src/invalid-credentials-error'
+import type { AuthUser, LoadUserByEmail } from '../src/load-user-by-email'
+import type { PasswordComparer } from '../src/password-comparer'
+import { SignInUseCase, type SignInInput, type SignInPayLoad } from '../src/signin-usecase'
 
 describe('SignInUseCase', () => {
   let plainPassword: string
@@ -41,6 +36,7 @@ describe('SignInUseCase', () => {
       userId: authUser.userId,
       email: authUser.email,
     }
+
     accessToken = 'any_access_token'
     loadUserByEmail = mock<LoadUserByEmail>()
     loadUserByEmail.load.mockResolvedValue(authUser)
@@ -59,7 +55,7 @@ describe('SignInUseCase', () => {
     expect(loadUserByEmail.load).toHaveBeenCalledOnce()
   })
 
-  test('Should throw InvalidCredentialsError if user is not found', async () => {
+  test('Should throws InvalidCredentialsError if user is not found', async () => {
     // Arrange
     loadUserByEmail.load.mockResolvedValueOnce(null)
     // Act
