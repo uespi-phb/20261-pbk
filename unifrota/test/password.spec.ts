@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 
-import { InvalidPasswordError } from '../src/invalid-password-error'
-import { Password } from '../src/password'
+import { InvalidPasswordError } from '#src/invalid-password-error'
+import { Password } from '#src/password'
 
 // TODO: update PRD to password rules
 describe('Password', () => {

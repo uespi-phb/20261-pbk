@@ -1,11 +1,7 @@
-model = "gpt-5.4"
+# .codex/config.toml
+
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
-model_reasoning_effort = "high"
 
-[features]
-codex_hooks = false
-multi_agent = false
-
-[projects."/home/eyder/workspace/unifrota"]
-trust_level = "trusted"
+[sandbox_workspace_write]
+network_access = false

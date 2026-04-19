@@ -1,6 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "./.cache/tsconfig.test.tsbuildinfo",
     "types": ["node", "vitest/globals"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "test/**/*.ts"],

@@ -21,8 +21,11 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install dependencies
         run: yarn install --immutable
 
       - name: Run CI checks
-        run: yarn run check:ci
+        run: yarn check:ci

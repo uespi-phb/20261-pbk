@@ -1,7 +1,7 @@
-import type { AccessTokenGenerator } from './access-token-generator'
-import { InvalidCredentialsError } from './invalid-credentials-error'
-import type { LoadUserByEmail } from './load-user-by-email'
-import type { PasswordComparer } from './password-comparer'
+import type { AccessTokenGenerator } from '#src/access-token-generator'
+import { InvalidCredentialsError } from '#src/invalid-credentials-error'
+import type { LoadUserByEmail } from '#src/load-user-by-email'
+import type { PasswordComparer } from '#src/password-comparer'
 
 export type SignInInput = {
   email: string

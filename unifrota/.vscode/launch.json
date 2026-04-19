@@ -8,7 +8,7 @@
       "cwd": "${workspaceFolder}",
       "program": "${workspaceFolder}/src/main.ts",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["--import", "tsx"],
+      "runtimeArgs": ["--experimental-transform-types", "--conditions=development"],
       "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**"]
     },
@@ -19,7 +19,7 @@
       "cwd": "${workspaceFolder}",
       "program": "${file}",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["--import", "tsx"],
+      "runtimeArgs": ["--experimental-transform-types", "--conditions=development"],
       "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**"]
     }

@@ -2,9 +2,10 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "moduleDetection": "force",
+    "incremental": true,
+    "tsBuildInfoFile": "./.cache/tsconfig.app.tsbuildinfo",
     "types": ["node"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts"],
-  "exclude": ["build", "coverage", "doc", "node_modules", "test/**/*.ts"]
+  "exclude": ["build", "coverage", "doc", "node_modules"]
 }

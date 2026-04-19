@@ -6,6 +6,6 @@
     "tsBuildInfoFile": "./.cache/tsconfig.app.tsbuildinfo",
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "test/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts"],
   "exclude": ["build", "coverage", "doc", "node_modules"]
 }

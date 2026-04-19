@@ -1,60 +1,15 @@
 import type { MockProxy } from 'vitest-mock-extended'
 import { mock } from 'vitest-mock-extended'
 
-type SignInInput = {
-  email: string
-  password: string
-}
-
-export type SignInOutput = {
-  accessToken: string
-}
-
-type AuthUser = {
-  userId: string
-  email: string
-  passwordHash: string
-}
-
-interface LoadAuthUserByEmail {
-  load: (email: string) => Promise<AuthUser | null>
-}
-
-interface PasswordComparer {
-  compare: (plainPassword: string, hashedPassword: string) => Promise<boolean>
-}
-
-class SignInUseCase {
-  constructor(
-    private readonly loadAuthUserByEmail: LoadAuthUserByEmail,
-    private readonly passwordComparer: PasswordComparer,
-  ) {}
-
-  public async execute(input: SignInInput): Promise<SignInOutput> {
-    const authUser = await this.loadAuthUserByEmail.load(input.email)
-    if (authUser === null) {
-      throw new InvalidCredentialsError()
-    }
-    await this.passwordComparer.compare(input.password, authUser.passwordHash)
-    return {
-      accessToken: 'any_access_token',
-    }
-  }
-}
-
-export abstract class AppError extends Error {
-  protected constructor(message: string, options?: ErrorOptions) {
-    super(message, options)
-    this.name = new.target.name
-    Error.captureStackTrace(this, new.target)
-  }
-}
-
-export class InvalidCredentialsError extends AppError {
-  public constructor(message: string = 'Invalid user credentials') {
-    super(message)
-  }
-}
+import type { LoadAuthUserByEmail } from '#src/signin/application/load-auth-user-by-email'
+import type { PasswordComparer } from '#src/signin/application/password-comparer'
+import {
+  SignInUseCase,
+  type SignInInput,
+  type SignInOutput,
+} from '#src/signin/application/signin-usecase'
+import type { AuthUser } from '#src/signin/domain/auth-user'
+import { InvalidCredentialsError } from '#src/signin/domain/errors/invalid-credentials-error'
 
 describe('SignInUseCase', () => {
   let sutInput: SignInInput

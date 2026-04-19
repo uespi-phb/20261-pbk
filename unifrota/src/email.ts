@@ -1,4 +1,4 @@
-import { InvalidEmailError } from './invalid-email-error'
+import { InvalidEmailError } from '#src/invalid-email-error'
 
 export class Email {
   constructor(public readonly value: string) {

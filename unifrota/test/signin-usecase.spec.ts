@@ -2,11 +2,11 @@ import { describe, test, expect, beforeAll } from 'vitest'
 import type { MockProxy } from 'vitest-mock-extended'
 import { mock } from 'vitest-mock-extended'
 
-import type { AccessTokenGenerator } from '../src/access-token-generator'
-import { InvalidCredentialsError } from '../src/invalid-credentials-error'
-import type { AuthUser, LoadUserByEmail } from '../src/load-user-by-email'
-import type { PasswordComparer } from '../src/password-comparer'
-import { SignInUseCase, type SignInInput, type SignInPayLoad } from '../src/signin-usecase'
+import type { AccessTokenGenerator } from '#src/access-token-generator'
+import { InvalidCredentialsError } from '#src/invalid-credentials-error'
+import type { AuthUser, LoadUserByEmail } from '#src/load-user-by-email'
+import type { PasswordComparer } from '#src/password-comparer'
+import { SignInUseCase, type SignInInput, type SignInPayLoad } from '#src/signin-usecase'
 
 describe('SignInUseCase', () => {
   let plainPassword: string
