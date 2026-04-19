@@ -13,7 +13,7 @@
   "js/ts.updateImportsOnFileMove.enabled": "always",
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   "typescript.tsdk": "node_modules/typescript/lib",
-  "eslint.run": "onSave",
+  "eslint.run": "onType",
   "eslint.workingDirectories": [{ "mode": "auto" }],
   "files.eol": "\n",
   "files.exclude": {

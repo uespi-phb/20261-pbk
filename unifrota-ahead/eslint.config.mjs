@@ -35,14 +35,6 @@ const sharedTypeScriptRules = {
     'error',
     {
       groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'index']],
-      pathGroups: [
-        {
-          pattern: '@src/**',
-          group: 'internal',
-          position: 'after',
-        },
-      ],
-      pathGroupsExcludedImportTypes: ['builtin'],
       alphabetize: {
         order: 'asc',
         caseInsensitive: true,
@@ -77,7 +69,7 @@ export default defineConfig([
       '.extra/**/*.cjs',
     ],
     languageOptions: {
-      ecmaVersion: 2022,
+      ecmaVersion: 2024,
       sourceType: 'module',
       globals: {
         ...globals.node,
@@ -105,7 +97,7 @@ export default defineConfig([
     files: ['src/**/*.ts'],
     extends: [...tseslint.configs.strictTypeChecked],
     languageOptions: {
-      ecmaVersion: 2022,
+      ecmaVersion: 2024,
       sourceType: 'module',
       globals: {
         ...globals.node,
@@ -126,7 +118,7 @@ export default defineConfig([
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
-          project: './tsconfig.build.json',
+          project: './tsconfig.json',
         },
         node: true,
       },
@@ -150,7 +142,7 @@ export default defineConfig([
     files: ['test/**/*.ts'],
     extends: [...tseslint.configs.strictTypeChecked],
     languageOptions: {
-      ecmaVersion: 2022,
+      ecmaVersion: 2024,
       sourceType: 'module',
       globals: {
         ...globals.node,
