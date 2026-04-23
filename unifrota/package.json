@@ -38,10 +38,12 @@
     "node": ">=24.15 <25"
   },
   "dependencies": {
-    "dotenv": "^16"
+    "dotenv": "^16",
+    "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9",
+    "@types/jsonwebtoken": "^9",
     "@types/node": "^24",
     "@vitest/coverage-v8": "^4.1.0",
     "@vitest/eslint-plugin": "^1.6.15",

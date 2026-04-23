@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest'
 import { InvalidPasswordError } from '#src/invalid-password-error'
 import { Password } from '#src/password'
 
-// TODO: update PRD to password rules
+// TODO: update PRD for password rules
 describe('Password', () => {
   const validPassword = 'V4l1dP4ssw0rd'
 

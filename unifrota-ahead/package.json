@@ -10,8 +10,8 @@
     }
   },
   "scripts": {
-    "dev": "node --experimental-transform-types --experimental-specifier-resolution=node --conditions=development ./src/main.ts",
-    "start": "node --experimental-specifier-resolution=node ./build/main.js",
+    "dev": "node --experimental-transform-types --conditions=development ./src/main.ts",
+    "start": "node ./build/main.js",
     "clean": "rimraf ./build ./.cache",
     "build": "yarn clean && tsc -p ./tsconfig.build.json",
     "type:check": "tsc --noEmit --project ./tsconfig.test.json",

@@ -1,6 +1,6 @@
-import type { LoadAuthUserByEmail } from './load-auth-user-by-email'
-import type { PasswordComparer } from './password-comparer'
-import { InvalidCredentialsError } from '../domain/errors/invalid-credentials-error'
+import type { LoadAuthUserByEmail } from '#src/features/signin/application/load-auth-user-by-email'
+import type { PasswordComparer } from '#src/features/signin/application/password-comparer'
+import { InvalidCredentialsError } from '#src/features/signin/domain/errors/invalid-credentials-error'
 
 export type SignInInput = {
   email: string

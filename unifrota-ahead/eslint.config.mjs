@@ -30,11 +30,23 @@ const sharedTypeScriptRules = {
   '@typescript-eslint/require-await': 'off',
   '@typescript-eslint/return-await': ['error', 'in-try-catch'],
   '@typescript-eslint/no-unnecessary-type-assertion': 'error',
-  'import/no-unresolved': 'error',
   'import/order': [
     'error',
     {
       groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'index']],
+      pathGroups: [
+        {
+          pattern: '#src/**',
+          group: 'internal',
+          position: 'before',
+        },
+        {
+          pattern: '#test/**',
+          group: 'internal',
+          position: 'before',
+        },
+      ],
+      pathGroupsExcludedImportTypes: ['builtin'],
       alphabetize: {
         order: 'asc',
         caseInsensitive: true,
@@ -42,9 +54,9 @@ const sharedTypeScriptRules = {
       'newlines-between': 'always',
     },
   ],
-  // Disabled in favor of TypeScript-aware resolution via eslint-plugin-import
+  // Disabled in favor of TypeScript-aware resolution and because
+  // eslint-plugin-import may produce false positives with package.json#imports
   'n/no-missing-import': 'off',
-  //
   'promise/catch-or-return': 'error',
   'promise/no-return-wrap': 'error',
   'import/no-duplicates': 'error',
@@ -134,6 +146,7 @@ export default defineConfig([
       '@typescript-eslint/no-unsafe-call': 'error',
       '@typescript-eslint/strict-boolean-expressions': 'error',
       '@typescript-eslint/explicit-function-return-type': 'off',
+      'import/no-unresolved': 'off',
       ...sharedTypeScriptRules,
     },
   },
@@ -180,6 +193,7 @@ export default defineConfig([
       '@typescript-eslint/no-unsafe-return': 'error',
       '@typescript-eslint/no-unsafe-call': 'error',
       '@typescript-eslint/strict-boolean-expressions': 'error',
+      'import/no-unresolved': 'off',
       ...sharedTypeScriptRules,
       'vitest/valid-title': 'error',
       'vitest/no-disabled-tests': 'warn',

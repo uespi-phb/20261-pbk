@@ -3,6 +3,8 @@ import { InvalidCredentialsError } from '#src/invalid-credentials-error'
 import type { LoadUserByEmail } from '#src/load-user-by-email'
 import type { PasswordComparer } from '#src/password-comparer'
 
+import type { UseCase } from './usecase.js'
+
 export type SignInInput = {
   email: string
   password: string
@@ -17,7 +19,7 @@ export type SignInPayLoad = {
   email: string
 }
 
-export class SignInUseCase {
+export class SignInUseCase implements UseCase<SignInInput, SignInOutput> {
   constructor(
     private readonly loadUserByEmail: LoadUserByEmail,
     private readonly passwordComparer: PasswordComparer,

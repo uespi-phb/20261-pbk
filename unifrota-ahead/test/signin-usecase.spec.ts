@@ -1,15 +1,15 @@
 import type { MockProxy } from 'vitest-mock-extended'
 import { mock } from 'vitest-mock-extended'
 
-import type { LoadAuthUserByEmail } from '#src/signin/application/load-auth-user-by-email'
-import type { PasswordComparer } from '#src/signin/application/password-comparer'
+import type { LoadAuthUserByEmail } from '#src/features/signin/application/load-auth-user-by-email'
+import type { PasswordComparer } from '#src/features/signin/application/password-comparer'
 import {
   SignInUseCase,
   type SignInInput,
   type SignInOutput,
-} from '#src/signin/application/signin-usecase'
-import type { AuthUser } from '#src/signin/domain/auth-user'
-import { InvalidCredentialsError } from '#src/signin/domain/errors/invalid-credentials-error'
+} from '#src/features/signin/application/signin-usecase'
+import type { AuthUser } from '#src/features/signin/domain/auth-user'
+import { InvalidCredentialsError } from '#src/features/signin/domain/errors/invalid-credentials-error'
 
 describe('SignInUseCase', () => {
   let sutInput: SignInInput
@@ -77,5 +77,11 @@ describe('SignInUseCase', () => {
 
     expect(passwordComparerSpy.compare).toHaveBeenCalledWith(sutInput.password, authUser.passwordHash)
     expect(passwordComparerSpy.compare).toHaveBeenCalledOnce()
+  })
+
+  it('Should throw InvalidCredentialsError if password is invalid', async () => {
+    passwordComparerSpy.compare.mockResolvedValueOnce(false)
+
+    await expect(sut.execute(sutInput)).rejects.toThrow(InvalidCredentialsError)
   })
 })

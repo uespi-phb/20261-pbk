@@ -12,7 +12,6 @@
   "js/ts.preferences.quoteStyle": "single",
   "js/ts.updateImportsOnFileMove.enabled": "always",
   "js/ts.tsdk.path": "node_modules/typescript/lib",
-  "typescript.tsdk": "node_modules/typescript/lib",
   "eslint.run": "onType",
   "eslint.workingDirectories": [{ "mode": "auto" }],
   "files.eol": "\n",
