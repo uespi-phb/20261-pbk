@@ -2,42 +2,60 @@
 
 ## 1. `SignOutUseCase`
 
-Esta é a classe central do fluxo. Ela deve reconhecer a solicitação explícita de saída e retornar uma resposta de sucesso compatível com o encerramento lógico do contexto autenticado atual, sem introduzir dependências artificiais de sessão, banco de dados ou revogação persistida. Os testes desta classe devem comprovar não apenas o caminho de sucesso, mas também a aderência do caso de uso às restrições arquiteturais e semânticas definidas no PRD.
+Esta é a classe central do fluxo de saída. Sua responsabilidade é receber a entrada do caso de uso, validar o token de acesso por meio da interface `AccessTokenValidator` e retornar a saída esperada.
 
-### 1.1
+### 1.1. **`should validate provided access token and return success`**
 
-**`should return success when sign out is requested`**
-Deve verificar se o caso de uso retorna uma resposta de sucesso quando a solicitação de `sign out` é executada em um cenário válido.
-Esse teste deve confirmar que a execução do fluxo não falha indevidamente, não lança exceções inesperadas e produz uma saída compatível com a conclusão bem-sucedida da operação.
-Também deve deixar claro que, no modelo atual, “sucesso” significa
+Deve verificar se o caso de uso chama `AccessTokenValidator` com o token recebido e, quando o token é válido, retorna a saída esperada de sign out.
 
-### 1.2
+### 1.2. **`should not validate invalid provided access token and returning failure`**
 
-**`should call AccessTokenValidator to validate access token`**
+Não retornar sucesso se `AccessTokenValidator` retorna `false` (token inválido).
 
-### 1.3
+### 1.3. **`should throw when access token is missing or empty`**
 
-**`should propagate error from observability dependency when logging is part of the use case contract`**
-Deve garantir que falhas oriundas de uma dependência de observabilidade, quando essa dependência fizer parte explícita do contrato do caso de uso, não sejam silenciosamente engolidas.
-O teste deve simular uma falha nessa dependência e verificar se o erro é propagado de modo consistente ao chamador.
-Isso evita mascaramento de falhas e torna explícito o comportamento esperado da aplicação diante de erro em componente acoplado ao fluxo.
+Deve garantir que o caso de uso rejeita entradas sem token de acesso ou com token vazio, evitando prosseguir com uma solicitação inválida.
 
-## 2. Domain (entities)
+### 1.4. **`should throw when access token is invalid`**
 
-No estado atual do PRD, **não há entidade de domínio obrigatória e explícita** para o caso de uso `sign out` cujo comportamento próprio justifique uma bateria autônoma de testes de _entities_. O documento caracteriza o `sign out` como um caso de uso propositalmente simples, sem sessão, sem revogação persistida e sem modelagem de `sessionId` ou artefatos correlatos; por isso, os testes derivados concentram-se legitimamente na camada de _application_.
+Deve verificar se o caso de uso falha adequadamente quando `AccessTokenValidator` indica que o token informado não é válido.
 
-Ainda assim, convém registrar testes conceituais nesta seção para deixar explícito o limite da modelagem atual e impedir que abstrações prematuras sejam introduzidas sem necessidade real do domínio.
+### 1.4. **`should propagate error from AccessTokenValidator`**
 
-### 2.1
+Deve garantir que erros lançados pela dependência de validação do token sejam propagados corretamente, sem serem mascarados pelo caso de uso.
 
-**`no domain entity tests are mandatory for sign out in the current specification`**
-Deve registrar que, com base na especificação atual, não se deriva nenhuma entidade de domínio obrigatória para `sign out` com invariantes próprias a serem testadas isoladamente.
-Esse item deve deixar claro que a ausência de testes de entidades não representa lacuna, mas consequência direta do fato de o caso de uso não introduzir, no momento, objeto de domínio com comportamento autônomo relevante.
-A finalidade do teste-documento aqui é proteger a coerência entre modelagem e necessidade real.
+### 1.5. **`should not depend on JwtAdapter directly`**
 
-### 2.2
+Deve verificar, em termos arquiteturais, que `SignOutUseCase` depende apenas da abstração `AccessTokenValidator`, e não da implementação concreta `JwtAdapter`.
 
-**`domain entity tests should only be introduced if a real domain concept emerges during technical specification`**
-Deve registrar que testes de entidades só devem surgir caso a especificação técnica introduza, de forma justificada, um conceito real de domínio com comportamento próprio, invariantes explícitas e valor semântico claro.
-Esse item deve servir como freio contra abstração prematura, evitando criação artificial de entidades como sessão, logout record ou token revogado sem respaldo efetivo no modelo de negócio.
-Caso futuramente surja tal conceito, então novos testes de domínio deverão cobrir suas regras, invariantes e comportamento próprio.
+## 2. `JwtAdapter`
+
+Esta classe concreta da infraestrutura adapta a biblioteca `JsonWebToken` ao contrato `AccessTokenValidator`. Seus testes devem verificar a tradução correta entre a interface da aplicação e a biblioteca externa.
+
+### 2.1. **`should return true when token is valid`**
+
+Deve garantir que o adapter retorna `true` quando a biblioteca valida corretamente o token.
+
+### 2.2. **`should validate token using JsonWebToken and configured secret`**
+
+Deve verificar se o adapter chama a biblioteca `JsonWebToken` usando o token recebido e a chave secreta configurada.
+
+### 2.3. **`should return false when token is invalid`**
+
+Deve verificar se o adapter retorna `false` quando o token é inválido, malformado, expirado ou assinado com chave incorreta.
+
+### 2.4. **`should propagate unexpected JsonWebToken errors`**
+
+Deve garantir que erros inesperados da biblioteca ou da configuração sejam propagados, quando não representarem simplesmente uma falha normal de validação do token.
+
+### 2.5. **`should not expose token payload`**
+
+Deve verificar que o adapter não retorna dados internos do payload quando sua responsabilidade contratual for apenas validar o token.
+
+## 3. `JsonWebToken`
+
+`JsonWebToken` aparece no diagrama como dependência externa. Assim, não deve receber testes unitários próprios no projeto.
+
+### 3.1. **`should be exercised through JwtAdapter integration tests`**
+
+Deve garantir que a biblioteca externa seja exercitada indiretamente por testes do `JwtAdapter`, especialmente em cenários com token válido, token expirado e token assinado com chave incorreta.
