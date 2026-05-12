@@ -28,6 +28,13 @@ describe('JwtAdapter', () => {
       expect(generatedAccessToken.length).toBeGreaterThan(0)
     })
 
+
+    it('Should generate token using JsonWebToken and configured secret', async () => {
+      await sut.generate(payload)
+
+      expect(jwt.sign).toHaveBeenCalledWith(payload, secret)
+    })
+
     it('Should return access token that can be validated with the configured secret', async () => {
       const generatedAccessToken = await sut.generate(payload)
 
@@ -36,11 +43,6 @@ describe('JwtAdapter', () => {
       expect(result).toBe(true)
     })
 
-    it('Should generate token using JsonWebToken and configured secret', async () => {
-      await sut.generate(payload)
-
-      expect(jwt.sign).toHaveBeenCalledWith(payload, secret)
-    })
 
     it('Should conform to AccessTokenGenerator interface', async () => {
       const accessTokenGenerator: AccessTokenGenerator<object> = sut
