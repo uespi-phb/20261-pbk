@@ -141,15 +141,10 @@ somente:
 Deve garantir que, quando o caso de uso retorna sucesso, o controller responda
 com status `200` e corpo contendo o token de acesso.
 
-### 4.4. **`should return 400 when request body is missing`**
+### 4.4. **`should return 400 when request body is missing ou null`**
 
 Deve garantir que o controller rejeita a requisição quando o corpo HTTP não é
 fornecido.
-
-### 4.5. **`should return 400 when request body is null`**
-
-Deve garantir que o controller rejeita a requisição quando o corpo HTTP chega
-como `null` em runtime.
 
 ### 4.6. **`should return 400 when email is missing`**
 

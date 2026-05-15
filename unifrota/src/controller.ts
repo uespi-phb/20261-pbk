@@ -9,5 +9,4 @@ export interface Response<Body> {
 
 export interface Controller<ReqBody, ResBody> {
   handle: (request: Request<ReqBody>) => Promise<Response<ResBody>>
-  validate: (input?: ReqBody) => Promise<void>
 }

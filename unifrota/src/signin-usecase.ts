@@ -19,7 +19,9 @@ export type SignInPayLoad = {
   email: string
 }
 
-export class SignInUseCase implements UseCase<SignInInput, SignInOutput> {
+export type SignInUseCaseInterface = UseCase<SignInInput, SignInOutput>
+
+export class SignInUseCase implements SignInUseCaseInterface {
   constructor(
     private readonly loadUserByEmail: LoadUserByEmail,
     private readonly passwordComparer: PasswordComparer,
