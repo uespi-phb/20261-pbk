@@ -140,6 +140,15 @@ Within each feature, use the following terminology and folder mapping:
 - create only the folders that are needed for the current feature
 - do not force empty architectural folders when the feature scope is still small
 
+## Documentation context
+
+- this repository is used in an academic software architecture context
+- when generating or updating Markdown documentation, include concise explanatory notes that clarify the architectural reasoning behind relevant decisions
+- these notes should explain why structures, boundaries, dependencies, patterns, or trade-offs exist in the project
+- keep the language objective, direct, and technical
+- do not refer to students, classes, teaching material, or the text itself as educational
+- never place these explanatory notes as code comments
+
 ## Completion rule
 
 - after any change to source code, including tests, always suggest a concise, technically accurate, and scope-aligned commit message before concluding the task

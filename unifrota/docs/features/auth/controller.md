@@ -1,217 +1,215 @@
-## SignInControlle - Estrutura Arquitetônica
+# Controllers
 
-### 1. Posição do controller
+Controllers são componentes da camada de interface responsáveis por adaptar uma
+requisição externa para uma operação da aplicação. Em uma API HTTP, eles recebem
+dados do protocolo, validam a fronteira de entrada, chamam um caso de uso ou
+serviço de aplicação e traduzem o resultado para uma resposta HTTP.
 
-**Camada:** `interface-adapters/http/controllers`
+O controller não deve ser tratado como o centro da regra de negócio. Seu papel é
+fazer a ponte entre o mundo externo e a aplicação.
 
-**Dependência permitida do controller:**
+## Papel na arquitetura
 
-- contrato genérico `UseCase<SignInInput, SignInOutput>` ou um contrato específico equivalente
-- contratos HTTP locais (`HttpRequest`, `HttpResponse`, `Controller`)
-- tipos de entrada e saída do caso de uso
+Em uma organização inspirada por Clean Architecture, controllers ficam próximos
+da borda do sistema. Eles conhecem detalhes do protocolo de entrada, como corpo
+da requisição, parâmetros, cabeçalhos e status HTTP, mas devem evitar conhecer
+detalhes de persistência, criptografia, bibliotecas externas ou regras de
+domínio.
 
-**Dependências que o controller não deve conhecer:**
+Um fluxo comum é:
 
-- `BCryptAdapter`
-- `JwtAdapter`
-- `PostgresAdapter`
-- `UserRepository`
-- `BCrypt`
-- `JsonWebToken`
-- `PostgreSQL`
+```text
+Framework HTTP -> Route Adapter -> Controller -> Use Case -> Domain/Ports
+```
 
-Essas dependências pertencem ao fluxo interno do caso de uso e da infraestrutura, não ao controller.
+Esse fluxo é apenas uma referência. Projetos diferentes podem nomear esses
+componentes de formas distintas. O ponto importante é preservar a direção da
+dependência: a interface adapta a entrada para a aplicação, e não o contrário.
 
-### 2. Fluxo mínimo
+## Responsabilidades
 
-`Framework/Route Adapter -> SignInController -> UseCase<SignInInput, SignInOutput> -> SignInUseCase`
+Um controller normalmente deve:
 
-No diagrama anexo, isso respeita o fato de que `SignInUseCase` orquestra `PasswordCompare`, `LoadUserByEmail` e `AccessTokenGenerator`, enquanto o controller fica apenas na borda HTTP.
+- receber uma requisição no formato esperado pela interface
+- validar aspectos básicos da fronteira, como presença e tipo dos dados
+- converter dados externos para o input esperado pela aplicação
+- chamar uma abstração da aplicação, como um caso de uso
+- traduzir sucesso, falhas esperadas e falhas inesperadas para uma resposta da
+  interface
 
----
+Um controller normalmente não deve:
 
-## Interfaces propostas
+- executar regra de negócio complexa
+- acessar banco de dados diretamente
+- chamar bibliotecas externas de infraestrutura diretamente
+- tomar decisões que pertencem ao domínio
+- duplicar validações semânticas que pertencem a entidades, value objects ou
+  casos de uso
 
-### `src/interface-adapters/http/protocols/http.ts`
+Essa separação mantém o controller pequeno, testável e substituível. Se o
+protocolo HTTP for trocado por outro mecanismo de entrada, a lógica central da
+aplicação deve continuar reaproveitável.
+
+## Validação de fronteira e validação semântica
+
+Uma distinção importante é separar validação de fronteira de validação semântica.
+
+Validação de fronteira verifica se a requisição possui a forma mínima necessária
+para ser adaptada. Exemplos:
+
+- o corpo da requisição existe
+- um campo obrigatório está presente
+- um campo recebido como texto realmente é uma string
+- um parâmetro de rota foi informado
+
+Validação semântica verifica se o valor faz sentido para a aplicação ou para o
+domínio. Exemplos:
+
+- um e-mail possui formato válido
+- uma senha atende às regras de complexidade do domínio
+- uma data inicial não pode ser posterior à data final
+- um usuário possui permissão para executar uma operação
+
+A primeira categoria costuma ficar no controller ou em validadores de interface.
+A segunda deve ficar no caso de uso, no domínio ou em componentes próprios da
+aplicação. Essa divisão evita que regras de negócio fiquem presas ao protocolo
+HTTP.
+
+## DTOs de entrada
+
+Dados vindos de uma requisição externa não devem ser tratados automaticamente
+como dados confiáveis da aplicação. Por isso, pode ser útil separar o tipo da
+requisição HTTP do tipo de entrada do caso de uso.
+
+Exemplo genérico:
 
 ```ts
-export interface HttpRequest<
-  TBody = unknown,
-  TParams extends Record<string, string | undefined> = Record<string, string | undefined>,
-  TQuery extends Record<string, string | undefined> = Record<string, string | undefined>,
-  THeaders extends Record<string, string | undefined> = Record<string, string | undefined>,
-> {
-  readonly body?: TBody
-  readonly params: TParams
-  readonly query: TQuery
-  readonly headers: THeaders
+type HttpRequestBody = {
+  name?: unknown
+  email?: unknown
 }
 
-export interface HttpResponse<TBody = unknown> {
-  readonly statusCode: number
-  readonly body: TBody
+type CreateAccountInput = {
+  name: string
+  email: string
 }
 ```
 
-### `src/interface-adapters/http/protocols/controller.ts`
+Nesse exemplo, `HttpRequestBody` representa dados ainda não validados. Depois da
+validação de fronteira, o controller pode montar um `CreateAccountInput`, que já
+representa dados aceitos pela aplicação.
+
+Essa separação deixa claro que o formato recebido pela rede não precisa ser igual
+ao contrato interno do caso de uso.
+
+## Dependências
+
+Controllers devem depender de abstrações estáveis da aplicação, não de detalhes
+concretos de infraestrutura.
+
+Exemplo genérico:
 
 ```ts
-export interface Controller<TRequest, TResponse> {
-  handle(request: TRequest): Promise<TResponse>
+type UseCase<Input, Output> = {
+  execute(input: Input): Promise<Output>
 }
 ```
 
-### `src/interface-adapters/http/controllers/sign-in/sign-in-http-dtos.ts`
+Um controller pode receber uma dependência compatível com esse contrato e chamar
+`execute()`. A implementação concreta pode usar banco de dados, criptografia,
+mensageria ou serviços externos, mas esses detalhes não precisam aparecer no
+controller.
+
+Essa escolha reduz acoplamento. Também torna os testes mais simples, porque o
+controller pode ser testado com uma dependência substituta que simula apenas o
+comportamento necessário.
+
+## Respostas HTTP
+
+Controllers traduzem resultados da aplicação para respostas da interface. Em
+HTTP, isso normalmente envolve status code e corpo da resposta.
+
+Exemplos comuns:
+
+- `200` ou `201` para sucesso
+- `400` para requisição malformada
+- `401` para autenticação inválida ou ausente
+- `403` para operação não autorizada
+- `404` para recurso inexistente
+- `409` para conflito de estado
+- `500` para falha inesperada
+
+O formato do corpo de erro deve ser consistente dentro do projeto. Uma estrutura
+simples pode conter uma mensagem e um código:
 
 ```ts
-export interface SignInHttpRequestBody {
-  readonly email?: unknown
-  readonly password?: unknown
+type ErrorResponseBody = {
+  code: string
+  message: string
 }
-
-export interface SignInSuccessHttpResponseBody {
-  readonly accessToken: string
-}
-
-export interface HttpErrorResponseBody {
-  readonly message: string
-  readonly code?: string
-}
-
-export type SignInHttpResponseBody = SignInSuccessHttpResponseBody | HttpErrorResponseBody
 ```
 
-### `src/interface-adapters/http/controllers/sign-in/sign-in-controller.contract.ts`
+Falhas inesperadas não devem expor detalhes internos da aplicação, como stack
+trace, mensagens técnicas de bibliotecas ou informações sensíveis. Esses detalhes
+pertencem a logs e mecanismos de observabilidade, não necessariamente à resposta
+pública.
+
+## Tratamento de erros
+
+O controller pode traduzir erros esperados da aplicação para respostas
+específicas. Por exemplo, uma falha de autenticação pode virar `401`, enquanto
+uma entrada malformada pode virar `400`.
+
+Essa tradução não significa que o domínio existe para atender ao HTTP. O domínio
+deve sinalizar falhas porque suas regras foram violadas. O controller apenas
+adapta essa falha para o protocolo usado na entrada.
+
+Ao lidar com erros, mantenha a diferença entre:
+
+- erros esperados, que fazem parte do fluxo conhecido da aplicação
+- erros inesperados, que indicam falhas não previstas ou problemas internos
+
+Essa distinção ajuda a definir respostas mais previsíveis sem espalhar detalhes
+internos pela interface.
+
+## Testes de controller
+
+Testes de controller devem focar o comportamento observável da adaptação.
+
+Bons testes costumam verificar:
+
+- se a dependência da aplicação foi chamada com o input correto
+- se campos extras da requisição externa não vazam para o caso de uso
+- se entradas inválidas na fronteira geram respostas adequadas
+- se o caso de uso não é chamado quando a requisição é inválida
+- se sucessos e erros esperados são traduzidos corretamente
+- se falhas inesperadas são tratadas como erro interno
+
+Evite testar detalhes internos do controller, como métodos auxiliares privados ou
+uma função de validação específica. O teste deve proteger o contrato externo:
+entrada, chamada ao caso de uso e resposta.
+
+Para dados simples, objetos literais geralmente são suficientes:
 
 ```ts
-import type { UseCase } from '#src/application/use-cases/common/use-case'
-import type { SignInInput } from '#src/application/use-cases/sign-in/sign-in-input'
-import type { SignInOutput } from '#src/application/use-cases/sign-in/sign-in-output'
-import type { Controller } from '#src/interface-adapters/http/protocols/controller'
-import type { HttpRequest, HttpResponse } from '#src/interface-adapters/http/protocols/http'
-import type {
-  SignInHttpRequestBody,
-  SignInHttpResponseBody,
-} from '#src/interface-adapters/http/controllers/sign-in/sign-in-http-dtos'
-
-export type SignInHttpRequest = HttpRequest<SignInHttpRequestBody>
-
-export type SignInHttpResponse = HttpResponse<SignInHttpResponseBody>
-
-export interface SignInControllerDependencies {
-  readonly signIn: UseCase<SignInInput, SignInOutput>
+const request = {
+  body: {
+    name: 'Jane Doe',
+    email: 'jane.doe@email.com',
+  },
 }
-
-export interface SignInControllerContract extends Controller<SignInHttpRequest, SignInHttpResponse> {}
 ```
 
----
+Mocks ou stubs são mais úteis para dependências com comportamento, como um caso
+de uso que pode retornar sucesso ou lançar uma falha esperada.
 
-## Responsabilidades do controller
+## Exemplo ilustrativo
 
-### Deve fazer
+Em um fluxo de autenticação, um controller poderia receber `email` e `password`,
+validar que ambos existem e são strings, chamar um caso de uso de sign in e
+traduzir o resultado para HTTP.
 
-- validar fronteira HTTP
-- garantir presença de `email` e `password`
-- garantir que ambos chegam como `string`
-- mapear a entrada HTTP para `SignInInput`
-- chamar o caso de uso
-- devolver `200` com `accessToken` no sucesso
-- traduzir erros esperados para `400` ou `401`
-- traduzir falhas inesperadas para `500`
-
-### Não deve fazer
-
-- consultar banco
-- comparar senha
-- gerar token
-- conhecer adapters concretos
-- conter regra de negócio de autenticação
-- duplicar validações semânticas que pertencem a `Email`, `Password` ou ao próprio caso de uso
-
-Isso preserva baixo acoplamento e mantém o controller com responsabilidade única, o que também é compatível com a abordagem de testes unitários sem recursos externos.
-
----
-
-## Observação importante sobre `SignInInput`
-
-Pelo diagrama, `SignInInput` está ligado aos objetos de domínio `Email` e `Password`. Portanto, a implementação concreta do controller pode seguir um destes caminhos:
-
-### Opção mais fiel ao diagrama
-
-O controller transforma `body.email` e `body.password` em `Email` e `Password` antes de montar `SignInInput`.
-
-### Opção mais pragmática
-
-O controller repassa strings para o caso de uso, e o próprio caso de uso instancia `Email` e `Password`.
-
-Entre as duas, eu prefiro a segunda para este exercício, porque reduz acoplamento do controller com detalhes do domínio e mantém a borda HTTP mais simples. Mas, se o projeto já definiu `SignInInput` com VOs explícitos, então a primeira opção fica mais aderente ao desenho existente.
-
----
-
-## Roteiro de testes de unidade
-
-Abaixo, adaptei o modelo do arquivo anexo para `SignInController`.
-
-# Roteiro de Testes para SignInController
-
-## 1. `SignInController`
-
-Esta é a classe da camada de interface responsável por receber a requisição HTTP de autenticação, validar a fronteira de entrada, mapear os dados para `SignInInput`, invocar o caso de uso de sign in e traduzir o resultado para uma resposta HTTP apropriada. Seu foco não é autenticar diretamente, mas adaptar o transporte HTTP ao contrato da aplicação. A ideia de manter adapters como ponte entre caso de uso e recursos externos é consistente com o material de Clean Architecture.
-
-### 1.1. **`should call sign in use case with email and password from request body`**
-
-Deve verificar se o controller extrai `email` e `password` do corpo da requisição e chama o caso de uso com a entrada correspondente.
-
-### 1.2. **`should return 200 and access token when credentials are valid`**
-
-Deve garantir que, quando o caso de uso retorna sucesso, o controller responda com status `200` e corpo contendo o token de acesso.
-
-### 1.3. **`should return 400 when request body is missing`**
-
-Deve garantir que o controller rejeita a requisição quando o corpo HTTP não é fornecido.
-
-### 1.4. **`should return 400 when email is missing`**
-
-Deve verificar que o controller responde com erro de requisição inválida quando `email` não está presente no corpo.
-
-### 1.5. **`should return 400 when password is missing`**
-
-Deve verificar que o controller responde com erro de requisição inválida quando `password` não está presente no corpo.
-
-### 1.6. **`should return 400 when email or password are not strings`**
-
-Deve garantir que a validação de fronteira rejeita entradas em que `email` ou `password` chegam com tipo incompatível com o contrato HTTP esperado.
-
-### 1.7. **`should not call sign in use case when request is invalid`**
-
-Deve verificar que, diante de falha de validação de entrada na borda HTTP, o controller não invoca o caso de uso.
-
-### 1.8. **`should return 401 when credentials are invalid`**
-
-Deve garantir que, quando o caso de uso sinaliza credenciais inválidas, o controller traduz adequadamente esse cenário para resposta HTTP `401`.
-
-### 1.9. **`should return 400 when use case rejects malformed email or password`**
-
-Deve verificar que, quando o caso de uso ou os value objects de domínio rejeitam `email` ou `password` malformados, o controller traduz esse erro esperado para `400`, sem mascará-lo como erro interno.
-
-### 1.10. **`should return 500 when sign in use case throws unexpected error`**
-
-Deve garantir que falhas inesperadas lançadas pelo caso de uso sejam traduzidas para `500`, preservando o isolamento entre a interface HTTP e detalhes internos do erro.
-
-### 1.11. **`should not depend on SignInUseCase concrete class directly`**
-
-Deve verificar, em termos arquiteturais, que o controller depende apenas do contrato do caso de uso, como `UseCase<SignInInput, SignInOutput>`, e não da classe concreta `SignInUseCase`.
-
----
-
-## Test doubles recomendados nos testes do controller
-
-Para esse conjunto, eu usaria:
-
-- **stub** para controlar a saída do caso de uso em cenários de sucesso ou falha esperada
-- **spy** para verificar se `execute()` foi chamado com a entrada correta
-- **mock** apenas quando a interação for o centro do teste
-- evitar fake aqui, porque o controller tem apenas uma dependência principal e o teste deve permanecer pequeno
-
-Essa escolha é coerente com a distinção entre stub, spy e mock e com a recomendação de usar mocks com parcimônia.
+Esse exemplo não define onde a validação semântica de e-mail ou senha deve ficar.
+Essa decisão depende do desenho do caso de uso, dos objetos de domínio e dos
+contratos adotados pelo projeto. O ponto geral é que o controller deve adaptar a
+requisição, não concentrar a regra de autenticação.
