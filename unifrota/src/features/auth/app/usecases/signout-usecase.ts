@@ -1,6 +1,6 @@
-import type { AccessTokenValidator } from './access-token-validator.js'
-import { InvalidAccessTokenError } from './invalid-access-token-error.js'
-import type { UseCase } from './usecase.js'
+import type { UseCase } from '../../../../shared/contracts/usecase.js'
+import type { AccessTokenValidator } from '../contracts/access-token-validator.js'
+import { InvalidAccessTokenError } from '../errors/invalid-access-token-error.js'
 
 export type SignOutInput = { accessToken: string }
 export type SignOutOutput = { result: boolean }

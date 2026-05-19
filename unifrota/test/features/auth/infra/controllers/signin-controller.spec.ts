@@ -1,18 +1,22 @@
 import { mock, type MockProxy } from 'vitest-mock-extended'
 
-import { type Request } from '#src/controller'
-import { SignInController, type ResquestBody } from '#src/signin-controller'
-import type { SignInUseCaseInterface } from '#src/signin-usecase'
+import type { SignInUseCaseInterface } from '#src/features/auth/app/usecases/signin-usecase'
+import { SignInController, type ResquestBody } from '#src/features/auth/infra/controllers/signin-controller'
+import { type Request } from '#src/shared/contracts/controller'
 
 describe('SignInController', () => {
+  let email: string
+  let password: string
   let body: Record<string, unknown>
   let signInUseCase: MockProxy<SignInUseCaseInterface>
   let sut: SignInController
 
   beforeAll(() => {
+    email = 'john.doe@email.com'
+    password = 'any_plain_password'
     body = {
-      email: 'john.doe@email.com',
-      password: 'any_plain_password',
+      email,
+      password,
     }
     signInUseCase = mock<SignInUseCaseInterface>()
     sut = new SignInController(signInUseCase)
@@ -57,6 +61,28 @@ describe('SignInController', () => {
     expect(response.statusCode).toBe(400)
 
     response = await sut.handle({ body: null } as unknown as Request<ResquestBody>)
+    expect(response.statusCode).toBe(400)
+  })
+
+  test('should return 400 when email is missing', async () => {
+    const response = await sut.handle({ body: { password } })
+    expect(response.statusCode).toBe(400)
+  })
+
+  test('should return 400 when password is missing', async () => {
+    const response = await sut.handle({ body: { email } })
+    expect(response.statusCode).toBe(400)
+  })
+
+  test('should return 400 when email is not a string', async () => {
+    const req = { body: { email: 0 as unknown as string, password } }
+    const response = await sut.handle(req)
+    expect(response.statusCode).toBe(400)
+  })
+
+  test('should return 400 when password is not a string', async () => {
+    const req = { body: { email, password: true as unknown as string } }
+    const response = await sut.handle(req)
     expect(response.statusCode).toBe(400)
   })
 })

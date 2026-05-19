@@ -1,4 +1,4 @@
-import { InfraError } from '#src/infra-error'
+import { InfraError } from '#src/shared/errors/infra-error'
 
 export abstract class HttpError extends InfraError {
   public readonly statusCode: number

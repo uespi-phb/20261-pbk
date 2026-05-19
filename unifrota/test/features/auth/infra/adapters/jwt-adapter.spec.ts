@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken'
 
-import type { AccessTokenGenerator } from '#src/access-token-generator'
-import type { AccessTokenValidator } from '#src/access-token-validator'
-import { JwtAdapter } from '#src/jwt-adapter'
-import { JwtAdapterError } from '#src/jwt-adapter-error'
+import type { AccessTokenGenerator } from '#src/features/auth/app/contracts/access-token-generator'
+import type { AccessTokenValidator } from '#src/features/auth/app/contracts/access-token-validator'
+import { JwtAdapter } from '#src/features/auth/infra/adapters/jwt-adapter'
+import { JwtAdapterError } from '#src/features/auth/infra/errors/jwt-adapter-error'
 
 describe('JwtAdapter', () => {
   let secret: string
@@ -28,7 +28,6 @@ describe('JwtAdapter', () => {
       expect(generatedAccessToken.length).toBeGreaterThan(0)
     })
 
-
     it('Should generate token using JsonWebToken and configured secret', async () => {
       await sut.generate(payload)
 
@@ -42,7 +41,6 @@ describe('JwtAdapter', () => {
 
       expect(result).toBe(true)
     })
-
 
     it('Should conform to AccessTokenGenerator interface', async () => {
       const accessTokenGenerator: AccessTokenGenerator<object> = sut

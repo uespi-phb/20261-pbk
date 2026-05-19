@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken'
 
-import type { AccessTokenGenerator } from '#src/access-token-generator'
-import type { AccessTokenValidator } from '#src/access-token-validator'
-import { JwtAdapterError } from '#src/jwt-adapter-error'
+import type { AccessTokenGenerator } from '#src/features/auth/app/contracts/access-token-generator'
+import type { AccessTokenValidator } from '#src/features/auth/app/contracts/access-token-validator'
+import { JwtAdapterError } from '#src/features/auth/infra/errors/jwt-adapter-error'
 
 export class JwtAdapter implements AccessTokenValidator<string>, AccessTokenGenerator<object> {
   constructor(private readonly secret: string) {}

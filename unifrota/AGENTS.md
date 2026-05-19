@@ -72,7 +72,7 @@ For small technical tasks with already-clear behavior, implement directly with l
 - treat automated tests as first-class artifacts of the codebase
 - for new or changed behavior, add or update automated tests that verify the intended outcome
 - when fixing a bug, add a regression test when feasible
-- prefer unit tests for `domain` and `application` logic
+- prefer unit tests for `domain` and `app` logic
 - use integration tests for `infra`, adapters, repositories, controllers, and other boundary-facing behavior when relevant
 - keep tests deterministic, isolated, intention-revealing, and fast whenever practical
 - prefer assertions on observable behavior, contracts, and outputs rather than on implementation details
@@ -99,7 +99,7 @@ For small technical tasks with already-clear behavior, implement directly with l
 
 - organize the codebase primarily by feature
 - inside each feature, group files by code role rather than by a global top-level layer
-- do not create global `domain`, `application`, or `infra` directories for the whole repository unless explicitly required
+- do not create global `domain`, `app`, or `infra` directories for the whole repository unless explicitly required
 
 ## Repository quick map
 
@@ -123,16 +123,16 @@ Use `yarn check` only when broader validation is justified by the scope.
 
 Within each feature, use the following terminology and folder mapping:
 
-| CA layer           | Adopted name   | folder        |
-| ------------------ | -------------- | ------------- |
-| entities           | domain         | `domain`      |
-| use cases          | application    | `application` |
-| interface adapters | infrastructure | `infra`       |
+| CA layer           | Adopted name   | folder   |
+| ------------------ | -------------- | -------- |
+| entities           | domain         | `domain` |
+| use cases          | application    | `app`    |
+| interface adapters | infrastructure | `infra`  |
 
 ## Structural rules
 
 - place business and domain rules in `domain`
-- place use cases and application orchestration in `application`
+- place use cases and application orchestration in `app`
 - place adapters, gateways, repositories, controllers, and other boundary-facing implementations in `infra`
 - keep errors, contracts, and related supporting artifacts close to the feature they belong to
 - avoid leaking infrastructure concerns into `domain`

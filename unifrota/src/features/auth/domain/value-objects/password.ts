@@ -1,4 +1,4 @@
-import { InvalidPasswordError } from '#src/invalid-password-error'
+import { InvalidPasswordError } from '#src/features/auth/domain/errors/invalid-password-error'
 
 export class Password {
   public static readonly minLength = 4

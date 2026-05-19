@@ -1,12 +1,11 @@
 import { readFile } from 'node:fs/promises'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
 
 import { mock, type MockProxy } from 'vitest-mock-extended'
 
-import type { AccessTokenValidator } from '#src/access-token-validator'
-import { InvalidAccessTokenError } from '#src/invalid-access-token-error'
-import { SignOutUseCase, type SignOutInput, type SignOutOutput } from '#src/signout-usecase'
+import type { AccessTokenValidator } from '#src/features/auth/app/contracts/access-token-validator'
+import { InvalidAccessTokenError } from '#src/features/auth/app/errors/invalid-access-token-error'
+import { SignOutUseCase, type SignOutInput, type SignOutOutput } from '#src/features/auth/app/usecases/signout-usecase'
 
 describe('SignOutUseCase', () => {
   let input: SignOutInput
@@ -65,9 +64,7 @@ describe('SignOutUseCase', () => {
 
   describe('Architectural', () => {
     test('Should not depend on JwtAdapter directly', async () => {
-      const currentDir = dirname(fileURLToPath(import.meta.url))
-      const projectRoot = resolve(currentDir, '..')
-      const sourcePath = resolve(projectRoot, 'src/signout-usecase.ts')
+      const sourcePath = resolve(process.cwd(), 'src/features/auth/app/usecases/signout-usecase.ts')
       const sourceCode = await readFile(sourcePath, 'utf8')
 
       expect(sourceCode).toContain('AccessTokenValidator')

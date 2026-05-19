@@ -1,8 +1,8 @@
 // /* eslint-disable vitest/no-conditional-expect */
 import { describe, test, expect } from 'vitest'
 
-import { Email } from '#src/email'
-import { InvalidEmailError } from '#src/invalid-email-error'
+import { InvalidEmailError } from '#src/features/auth/domain/errors/invalid-email-error'
+import { Email } from '#src/features/auth/domain/value-objects/email'
 
 describe('Email', () => {
   test('Should create Email when e-mail address is valid', () => {
